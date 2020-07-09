@@ -24,6 +24,7 @@ var(
 	G_jobMgr *JobMgr
 )
 
+
 func InitJobMgr()(err error){
 	var(
 		config clientv3.Config

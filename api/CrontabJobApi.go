@@ -17,6 +17,7 @@ func(c *CrontabJobApiController) URLMapping(){
 	c.Mapping("JobDelete",c.JobDelete)
 	c.Mapping("JobList",c.JobList)
 	c.Mapping("JobKill",c.JobKill)
+	c.Mapping("CheckCronExpr",c.CheckCronExpr)
 }
 
 var(
@@ -25,7 +26,31 @@ var(
 	job common.Job
 	oldJobData *common.Job
 	jobList []*common.Job
+	nextTime []string
 )
+
+/**
+	检查crontab表达式是否正确
+ */
+// @router /job/checkCronExpr [post]
+func (c *CrontabJobApiController) CheckCronExpr(){
+	if !strings.HasPrefix(c.Ctx.Input.Header("Content-Type"),"application/json"){
+		c.ResponseFailed("500","格式不正确")
+	}
+	requestBody = c.Ctx.Input.RequestBody
+	if err = json.Unmarshal(requestBody,&job);err!=nil{
+		logs.Error("job save json unmarshal errors:")
+		logs.Error(err)
+		c.ResponseFailed("500","保存时解析json出错")
+	}
+	if job.CronExpr == ""{
+		c.ResponseFailed("500","请传入表达式")
+	}
+	if err , nextTime = service.CheckCrontabExpr(job.CronExpr);err !=nil{
+		c.ResponseFailed("500",err.Error())
+	}
+	c.ResponseSuccess(nextTime,"获取表达式成功")
+}
 
 /**
 	新建/编辑任务
