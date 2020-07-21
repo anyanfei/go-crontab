@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/coreos/etcd/mvcc/mvccpb"
 	"go.etcd.io/etcd/clientv3"
 	"go_crontab/common"
 	"os"
@@ -17,6 +18,7 @@ type JobMgr struct {
 	client *clientv3.Client
 	kv clientv3.KV
 	lease clientv3.Lease
+	watcher clientv3.Watcher
 }
 
 
@@ -31,10 +33,19 @@ func InitJobMgr()(err error){
 		client *clientv3.Client
 		kv	clientv3.KV
 		lease	clientv3.Lease
+		watcher clientv3.Watcher
 		dialTimeoutInfo int64
 		endPoints []string
 		endPointsString string
 	)
+
+	//顺带初始化调度器的内存空间，因为在这里就需要向通道推送数据了
+	common.G_scheduler = &common.Scheduler{
+		JobEventChan:make(chan *common.JobEvent,1000),
+		JobPlanTable: make(map[string] *common.JobSchedulePlan),
+		JobExecutingTable:make(map[string] *common.JobExecuteInfo),
+		JobResultChan:make(chan *common.JobExecuteResult,1000),
+	}
 
 
 	endPointsString = os.Getenv("ETCD_END_POINTS")
@@ -53,11 +64,17 @@ func InitJobMgr()(err error){
 	//获取KV
 	kv = clientv3.NewKV(client)
 	lease = clientv3.NewLease(client)
+	watcher = clientv3.Watcher(client)
 
 	G_jobMgr = &JobMgr{
 		client:client,
 		kv:kv,
 		lease:lease,
+		watcher:watcher,
+	}
+	//启动监听器
+	if err = G_jobMgr.watchJobs();err !=nil{
+		return
 	}
 	return
 }
@@ -155,5 +172,58 @@ func (jobMgr *JobMgr) KillJob(name string)(err error){
 	if _,err = jobMgr.kv.Put(context.TODO(),killerKey,"",clientv3.WithLease(leaseId));err!=nil{
 		return
 	}
+	return
+}
+
+/**
+	监听job任务的变化
+ */
+func (jobMgr *JobMgr) watchJobs() (err error){
+	var(
+		getResp *clientv3.GetResponse
+		watchStartRevision int64
+		watchChan clientv3.WatchChan
+		watchResp clientv3.WatchResponse
+		watchEvent *clientv3.Event
+		job *common.Job
+		jobName string
+		jobEvent *common.JobEvent
+	)
+	if getResp , err = jobMgr.kv.Get(context.TODO(),os.Getenv("ETCD_JOB_DIR"),clientv3.WithPrefix());err != nil{
+		return
+	}
+
+	//得到当前有哪些任务
+	for _,respV := range getResp.Kvs{
+		if job,err = common.UnpackJob(respV.Value);err == nil{
+			jobEvent = common.BuildJobEvent(common.JOB_EVENT_SAVE,job)
+			common.G_scheduler.PushJobEvent(jobEvent)
+		}
+	}
+
+	//监听版本变化
+	go func() {
+		watchStartRevision = getResp.Header.Revision + 1
+		//监听目录的变化，从watchStartRevision版本开始监听
+		watchChan = jobMgr.watcher.Watch(context.TODO(),os.Getenv("ETCD_JOB_DIR"),clientv3.WithRev(watchStartRevision),clientv3.WithPrefix())
+		//处理监听
+		for watchResp = range watchChan{
+			for _,watchEvent = range watchResp.Events{
+				switch watchEvent.Type {
+				case mvccpb.PUT:
+					if job , err = common.UnpackJob(watchEvent.Kv.Value);err !=nil{
+						continue
+					}
+					jobEvent = common.BuildJobEvent(common.JOB_EVENT_SAVE,job)
+				case mvccpb.DELETE:
+					jobName = common.ExtractJobName(string(watchEvent.Kv.Key))
+					job = &common.Job{Name:jobName}
+					jobEvent = common.BuildJobEvent(common.JOB_EVENT_DELETE,job)
+				}
+				common.G_scheduler.PushJobEvent(jobEvent)
+			}
+		}
+	}()
+
 	return
 }
