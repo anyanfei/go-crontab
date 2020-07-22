@@ -5,8 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/coreos/etcd/mvcc/mvccpb"
-	"go.etcd.io/etcd/clientv3"
-	"go_crontab/common"
+	"github.com/coreos/etcd/clientv3"
 	"os"
 	"strconv"
 	"strings"
@@ -40,11 +39,11 @@ func InitJobMgr()(err error){
 	)
 
 	//顺带初始化调度器的内存空间，因为在这里就需要向通道推送数据了
-	common.G_scheduler = &common.Scheduler{
-		JobEventChan:make(chan *common.JobEvent,1000),
-		JobPlanTable: make(map[string] *common.JobSchedulePlan),
-		JobExecutingTable:make(map[string] *common.JobExecuteInfo),
-		JobResultChan:make(chan *common.JobExecuteResult,1000),
+	G_scheduler = &Scheduler{
+		JobEventChan:make(chan *JobEvent,1000),
+		JobPlanTable: make(map[string] *JobSchedulePlan),
+		JobExecutingTable:make(map[string] *JobExecuteInfo),
+		JobResultChan:make(chan *JobExecuteResult,1000),
 	}
 
 
@@ -80,12 +79,12 @@ func InitJobMgr()(err error){
 }
 
 //保存任务的方法
-func(jobMgr *JobMgr) SaveJob(job *common.Job)(oldJob *common.Job,err error){
+func(jobMgr *JobMgr) SaveJob(job *Job)(oldJob *Job,err error){
 	var(
-		jobKey string
-		jobValue []byte
-		putResp *clientv3.PutResponse
-		oldJobObj common.Job
+		jobKey    string
+		jobValue  []byte
+		putResp   *clientv3.PutResponse
+		oldJobObj Job
 	)
 	//设置etcd任务的key为:
 	jobKey = os.Getenv("ETCD_JOB_DIR") + job.Name
@@ -108,11 +107,11 @@ func(jobMgr *JobMgr) SaveJob(job *common.Job)(oldJob *common.Job,err error){
 }
 
 //删除任务方法
-func(jobMgr *JobMgr) DeleteJob(jobName string)(oldJob *common.Job,err error){
+func(jobMgr *JobMgr) DeleteJob(jobName string)(oldJob *Job,err error){
 	var(
-		jobKey string
-		delResp *clientv3.DeleteResponse
-		oldJobObj common.Job
+		jobKey    string
+		delResp   *clientv3.DeleteResponse
+		oldJobObj Job
 	)
 
 	jobKey = os.Getenv("ETCD_JOB_DIR") + jobName
@@ -131,19 +130,19 @@ func(jobMgr *JobMgr) DeleteJob(jobName string)(oldJob *common.Job,err error){
 }
 
 //获取任务列表
-func (jobMgr *JobMgr) GetListJob()(jobList []*common.Job,err error){
+func (jobMgr *JobMgr) GetListJob()(jobList []*Job,err error){
 	var (
 		jobKey string
 		getResp *clientv3.GetResponse
-		job *common.Job
+		job *Job
 	)
 	jobKey = os.Getenv("ETCD_JOB_DIR")
 	if getResp , err = jobMgr.kv.Get(context.TODO(),jobKey,clientv3.WithPrefix());err !=nil{
 		return nil,err
 	}
-	jobList = make([]*common.Job,0)
+	jobList = make([]*Job,0)
 	for _,getRespV := range getResp.Kvs{
-		job = &common.Job{}
+		job = &Job{}
 		if err = json.Unmarshal(getRespV.Value,job);err!=nil{
 			err = nil
 			continue
@@ -185,9 +184,9 @@ func (jobMgr *JobMgr) watchJobs() (err error){
 		watchChan clientv3.WatchChan
 		watchResp clientv3.WatchResponse
 		watchEvent *clientv3.Event
-		job *common.Job
+		job *Job
 		jobName string
-		jobEvent *common.JobEvent
+		jobEvent *JobEvent
 	)
 	if getResp , err = jobMgr.kv.Get(context.TODO(),os.Getenv("ETCD_JOB_DIR"),clientv3.WithPrefix());err != nil{
 		return
@@ -195,9 +194,9 @@ func (jobMgr *JobMgr) watchJobs() (err error){
 
 	//得到当前有哪些任务
 	for _,respV := range getResp.Kvs{
-		if job,err = common.UnpackJob(respV.Value);err == nil{
-			jobEvent = common.BuildJobEvent(common.JOB_EVENT_SAVE,job)
-			common.G_scheduler.PushJobEvent(jobEvent)
+		if job,err = UnpackJob(respV.Value);err == nil{
+			jobEvent = BuildJobEvent(JOB_EVENT_SAVE,job)
+			G_scheduler.PushJobEvent(jobEvent)
 		}
 	}
 
@@ -211,19 +210,29 @@ func (jobMgr *JobMgr) watchJobs() (err error){
 			for _,watchEvent = range watchResp.Events{
 				switch watchEvent.Type {
 				case mvccpb.PUT:
-					if job , err = common.UnpackJob(watchEvent.Kv.Value);err !=nil{
+					if job , err = UnpackJob(watchEvent.Kv.Value);err !=nil{
 						continue
 					}
-					jobEvent = common.BuildJobEvent(common.JOB_EVENT_SAVE,job)
+					jobEvent = BuildJobEvent(JOB_EVENT_SAVE,job)
 				case mvccpb.DELETE:
-					jobName = common.ExtractJobName(string(watchEvent.Kv.Key))
-					job = &common.Job{Name:jobName}
-					jobEvent = common.BuildJobEvent(common.JOB_EVENT_DELETE,job)
+					jobName = ExtractJobName(string(watchEvent.Kv.Key))
+					job = &Job{Name: jobName}
+					jobEvent = BuildJobEvent(JOB_EVENT_DELETE,job)
 				}
-				common.G_scheduler.PushJobEvent(jobEvent)
+				G_scheduler.PushJobEvent(jobEvent)
 			}
 		}
 	}()
 
 	return
+}
+
+/**
+	创建任务执行锁
+ */
+
+func (jobMgr *JobMgr) CreateJobLock(jobName string) (jobLock *JobLock){
+	//返回一把锁
+	jobLock = InitJobLock(jobName,jobMgr.kv,jobMgr.lease)
+	return jobLock
 }

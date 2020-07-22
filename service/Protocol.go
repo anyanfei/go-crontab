@@ -1,4 +1,4 @@
-package common
+package service
 
 import (
 	"encoding/json"
@@ -32,15 +32,15 @@ type JobEvent struct {
 }
 
 type JobSchedulePlan struct {
-	Job *Job //任务信息
+	Job *Job                  //任务信息
 	Expr *cronexpr.Expression //解析好的表达式
-	NextTime time.Time //下次调度时间
+	NextTime time.Time        //下次调度时间
 }
 
 type JobExecuteInfo struct {
-	Job *Job	//任务信息
-	PlanTime time.Time	//理论调度时间
-	RealTime time.Time  //实际调度时间
+	Job *Job           //任务信息
+	PlanTime time.Time //理论调度时间
+	RealTime time.Time //实际调度时间
 }
 
 //任务执行结果
@@ -88,7 +88,7 @@ func BuildJobEvent(eventType int,job *Job) (jobEvent *JobEvent){
 /**
 	构造调度任务计划
  */
-func BuildJobSchedulerPlan(job *Job)(jobSchedulePlan *JobSchedulePlan , err error){
+func BuildJobSchedulerPlan(job *Job)(jobSchedulePlan *JobSchedulePlan, err error){
 	var(
 		expr *cronexpr.Expression
 	)
@@ -118,7 +118,7 @@ func BuildJobExecuteInfo(jobSchedulePlan *JobSchedulePlan)(jobExecuteInfo *JobEx
 /**
 根据url获取执行的返回
 */
-func GetHttpResponsed(sendUrl string) (bodyString []byte,err error){
+func GetHttpGozResponsed(sendUrl string) (bodyString []byte,err error){
 	var(
 		cli *goz.Request
 		resp *goz.Response

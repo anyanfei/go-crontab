@@ -1,4 +1,4 @@
-package common
+package service
 
 import (
 	"github.com/astaxie/beego/logs"
@@ -6,10 +6,10 @@ import (
 )
 
 type Scheduler struct {
-	JobEventChan chan *JobEvent //etcd任务事件队列
-	JobPlanTable map[string] *JobSchedulePlan //任务调度计划表
+	JobEventChan chan *JobEvent                   //etcd任务事件队列
+	JobPlanTable map[string] *JobSchedulePlan     //任务调度计划表
 	JobExecutingTable map[string] *JobExecuteInfo //任务执行表
-	JobResultChan chan *JobExecuteResult	//任务结果队列
+	JobResultChan chan *JobExecuteResult          //任务结果队列
 }
 
 var G_scheduler *Scheduler

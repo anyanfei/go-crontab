@@ -4,7 +4,6 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 	"github.com/joho/godotenv"
-	"go_crontab/common"
 	_ "go_crontab/routers"
 	"go_crontab/service"
 	"os"
@@ -26,12 +25,12 @@ func init()  {
 	}
 
 	//初始化时间调度器
-	if err = common.InitScheduler();err != nil{
+	if err = service.InitScheduler();err != nil{
 		logs.Error("初始化时间调度器失败")
 		logs.Error(err)
 	}
 
-	if err = common.InitExecutor();err != nil{
+	if err = service.InitExecutor();err != nil{
 		logs.Error("初始化执行器失败")
 		logs.Error(err)
 	}

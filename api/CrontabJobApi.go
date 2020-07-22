@@ -3,13 +3,12 @@ package api
 import (
 	"encoding/json"
 	"github.com/astaxie/beego/logs"
-	"go_crontab/common"
 	"go_crontab/service"
 	"strings"
 )
 
 type CrontabJobApiController struct {
-	common.ApiController
+	service.ApiController
 }
 
 func(c *CrontabJobApiController) URLMapping(){
@@ -21,12 +20,12 @@ func(c *CrontabJobApiController) URLMapping(){
 }
 
 var(
-	err error
+	err         error
 	requestBody []byte
-	job common.Job
-	oldJobData *common.Job
-	jobList []*common.Job
-	nextTime []string
+	job         service.Job
+	oldJobData  *service.Job
+	jobList     []*service.Job
+	nextTime    []string
 )
 
 /**
