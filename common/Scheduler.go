@@ -41,7 +41,7 @@ func (scheduler *Scheduler) processJobEvent(jobEvent *JobEvent){
  */
 func (scheduler *Scheduler) processJobResult(result *JobExecuteResult){
 	delete(scheduler.JobExecutingTable,result.ExecuteInfo.Job.Name)
-	logs.Info("任务执行完成",result.ExecuteInfo.Job.Name,result.Err,string(result.Output))
+	logs.Info("任务执行完成",result.ExecuteInfo.Job.Name,result.Err)
 }
 
 //协程启动调度
@@ -94,7 +94,7 @@ func (scheduler *Scheduler) TryStartJob(jobPlan *JobSchedulePlan){
 	//保存执行状态
 	scheduler.JobExecutingTable[jobPlan.Job.Name] = jobExecuteInfo
 	//执行任务
-	logs.Info("执行任务",jobExecuteInfo.Job.Name,jobExecuteInfo.PlanTime,jobExecuteInfo.RealTime)
+	logs.Info("执行任务：",jobExecuteInfo.Job.Name,"，执行时间：",jobExecuteInfo.RealTime)
 	G_executor.ExecuteJob(jobExecuteInfo)
 }
 
