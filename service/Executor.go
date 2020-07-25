@@ -41,7 +41,7 @@ func (executor *Executor) ExecuteJob(info *JobExecuteInfo){
 		}else{
 			//上锁成功后重置任务启动时间
 			result.StartTime = time.Now()
-			output,err = GetHttpGozResponsed(info.Job.Command)
+			output,err = GetHttpResponsed(info.Job.Command)
 			result.EndTime = time.Now()
 			result.Output = output
 			result.Err = err

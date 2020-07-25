@@ -112,7 +112,7 @@ func (c *CrontabJobApiController) JobList(){
 }
 
 /**
-	强杀任务
+	强杀任务(暂时不用)
  */
 // @router /job/jobKill [post]
 func (c * CrontabJobApiController) JobKill(){
@@ -125,7 +125,7 @@ func (c * CrontabJobApiController) JobKill(){
 		logs.Error(err)
 		c.ResponseFailed("500","强杀任务时解析json出错")
 	}
-	if job.Name == ""{
+	if job.Name == ""{l
 		c.ResponseFailed("500","传入的数据不完整")
 	}
 	if err = service.G_jobMgr.KillJob(job.Name);err != nil{

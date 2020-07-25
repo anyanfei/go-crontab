@@ -33,6 +33,9 @@ func (scheduler *Scheduler) processJobEvent(jobEvent *JobEvent){
 			if jobSchedulerPlan,jobExist = scheduler.JobPlanTable[jobEvent.Job.Name];jobExist{
 				delete(scheduler.JobPlanTable,jobEvent.Job.Name)
 			}
+		case JOB_EVENT_KILLER://强杀任务事件
+		//取消掉http请求执行
+
 	}
 }
 

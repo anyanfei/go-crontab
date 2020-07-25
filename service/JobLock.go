@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"github.com/astaxie/beego/logs"
 	"github.com/coreos/etcd/clientv3"
 	"os"
@@ -83,6 +84,7 @@ func (jobLock *JobLock)TryLock()(err error){
 	}
 	//5、成功返回，失败释放租约
 	if !txnResp.Succeeded{
+		err = errors.New("锁已被占用")
 		goto FAIL
 	}
 	//抢锁成功
