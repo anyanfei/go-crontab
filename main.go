@@ -18,6 +18,12 @@ func init()  {
 	if err = godotenv.Load(".env");err !=nil{
 		logs.Error("no .env file")
 	}
+	//初始化mysql
+	if err = service.InitDataBase();err !=nil{
+		logs.Error("当前mysql初始化报错")
+		logs.Error(err)
+	}
+
 	//初始化etcd
 	if err = service.InitJobMgr();err !=nil{
 		logs.Error("初始化etcd报错")

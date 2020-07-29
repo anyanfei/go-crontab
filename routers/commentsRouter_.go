@@ -38,7 +38,7 @@ func init() {
         beego.ControllerComments{
             Method: "JobList",
             Router: "/job/jobList",
-            AllowHTTPMethods: []string{"get"},
+            AllowHTTPMethods: []string{"post"},
             MethodParams: param.Make(),
             Filters: nil,
             Params: nil})
@@ -47,6 +47,15 @@ func init() {
         beego.ControllerComments{
             Method: "JobSave",
             Router: "/job/jobSave",
+            AllowHTTPMethods: []string{"post"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["go_crontab/api:CrontabJobApiController"] = append(beego.GlobalControllerRouter["go_crontab/api:CrontabJobApiController"],
+        beego.ControllerComments{
+            Method: "JobLogsList",
+            Router: "/job/logs",
             AllowHTTPMethods: []string{"post"},
             MethodParams: param.Make(),
             Filters: nil,

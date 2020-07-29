@@ -17,6 +17,7 @@ func(c *CrontabJobApiController) URLMapping(){
 	c.Mapping("JobList",c.JobList)
 	c.Mapping("JobKill",c.JobKill)
 	c.Mapping("CheckCronExpr",c.CheckCronExpr)
+	c.Mapping("JobLogsList",c.JobLogsList)
 }
 
 var(
@@ -26,6 +27,12 @@ var(
 	oldJobData  *service.Job
 	jobList     []*service.Job
 	nextTime    []string
+	jobListRequest service.JobListRequest
+	keyWord 	string
+	getTaskLogs   service.GetTaskLogs
+	taskLogsData  map[string]interface{}
+
+
 )
 
 /**
@@ -102,20 +109,61 @@ func (c *CrontabJobApiController) JobDelete(){
 /**
 	获取任务列表
  */
-// @router /job/jobList [get]
+// @router /job/jobList [post]
 func (c *CrontabJobApiController) JobList(){
-	if jobList , err = service.G_jobMgr.GetListJob();err !=nil{
+	var (
+		allCount int
+	)
+	if !strings.HasPrefix(c.Ctx.Input.Header("Content-Type"),"application/json"){
+		c.ResponseFailed("500","格式不正确")
+	}
+	requestBody = c.Ctx.Input.RequestBody
+	if err = json.Unmarshal(requestBody,&jobListRequest);err!=nil{
+		logs.Error("get job list unmarshal errors:")
+		logs.Error(err)
+		c.ResponseFailed("500","获取列表时解析json出错")
+	}
+	if jobListRequest.Page == 0{
+		c.ResponseFailed("500","页码必传")
+	}
+	if jobListRequest.PageSize == 0{
+		c.ResponseFailed("500","每页个数必传")
+	}
+	keyWord = ""
+	if jobListRequest.KeyWord != ""{
+		keyWord = jobListRequest.KeyWord
+	}
+	if jobList , err = service.G_jobMgr.GetListJob(keyWord);err !=nil{
 		logs.Error(err)
 		c.ResponseFailed("500","获取列表时出现网络错误，可能是单点故障")
 	}
-	c.ResponseSuccess(jobList,"获取任务列表成功")
+	allCount = len(jobList)
+	var tempSlice = make([]interface{},0)
+	for _,v := range jobList{
+		tempSlice = append(tempSlice,*v)
+	}
+	var resultList,resList []interface{}
+	tempSliceChunk := service.SliceChunk(tempSlice,jobListRequest.PageSize)
+	indexNum := jobListRequest.Page - 1
+	if indexNum < len(tempSliceChunk){
+		resultList = tempSliceChunk[indexNum]
+		for _,vv := range resultList{
+			if vv != nil{
+				resList = append(resList,vv)
+			}
+		}
+	}
+	var resultData = make(map[string]interface{})
+	resultData["all_count"] = allCount
+	resultData["lists"] = resList
+	c.ResponseSuccess(resultData,"获取任务列表成功")
 }
 
 /**
 	强杀任务(暂时不用)
  */
 // @router /job/jobKill [post]
-func (c * CrontabJobApiController) JobKill(){
+func (c *CrontabJobApiController) JobKill(){
 	if !strings.HasPrefix(c.Ctx.Input.Header("Content-Type"),"application/json"){
 		c.ResponseFailed("500","格式不正确")
 	}
@@ -125,7 +173,7 @@ func (c * CrontabJobApiController) JobKill(){
 		logs.Error(err)
 		c.ResponseFailed("500","强杀任务时解析json出错")
 	}
-	if job.Name == ""{l
+	if job.Name == ""{
 		c.ResponseFailed("500","传入的数据不完整")
 	}
 	if err = service.G_jobMgr.KillJob(job.Name);err != nil{
@@ -133,5 +181,26 @@ func (c * CrontabJobApiController) JobKill(){
 		c.ResponseFailed("500","强杀时出现网络错误，可能是单点故障")
 	}
 	c.ResponseSuccess(nil,"强杀任务操作成功")
+}
+
+/**
+	获取日志信息（分页）
+ */
+// @router /job/logs [post]
+func (c *CrontabJobApiController) JobLogsList(){
+	if !strings.HasPrefix(c.Ctx.Input.Header("Content-Type"),"application/json"){
+		c.ResponseFailed("500","格式不正确")
+	}
+	requestBody = c.Ctx.Input.RequestBody
+	if err = json.Unmarshal(requestBody,&getTaskLogs);err!=nil{
+		logs.Error(err)
+		c.ResponseFailed("500","获取日志任务时解析json出错")
+	}
+	if getTaskLogs.JobName == ""{
+		c.ResponseFailed("500","传入的数据不完整")
+	}
+	taskLogsData = service.GetTaskLogsByPage(getTaskLogs.Page,getTaskLogs.PageSize,getTaskLogs.JobName)
+
+	c.ResponseSuccess(taskLogsData,"获取列表成功")
 }
 

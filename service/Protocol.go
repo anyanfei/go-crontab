@@ -14,6 +14,12 @@ const JOB_EVENT_DELETE int = 2
 //杀死事件
 const JOB_EVENT_KILLER int = 3
 
+type JobListRequest struct {
+	Page int `json:"page"`
+	PageSize int `json:"page_size"`
+	KeyWord string `json:"key_word"`
+}
+
 type Job struct {
 	Name string `json:"name"`
 	Command string `json:"command"`
@@ -50,6 +56,13 @@ type JobExecuteResult struct {
 	Err error
 	StartTime time.Time
 	EndTime time.Time
+}
+
+//日志查询传入
+type GetTaskLogs struct {
+	Page int `json:"page"`
+	PageSize int `json:"page_size"`
+	JobName string `json:"job_name"`
 }
 
 /**
@@ -124,3 +137,24 @@ func BuildJobExecuteInfo(jobSchedulePlan *JobSchedulePlan)(jobExecuteInfo *JobEx
 	}
 	return
 }
+
+/**
+	模拟php的array_chunk函数
+ */
+func SliceChunk(slice []interface{}, size int) (chunkslice [][]interface{}) {
+	if size >= len(slice) {
+		chunkslice = append(chunkslice, slice)
+		return
+	}
+	var end int = size
+	for i := 0; i <= len(slice); i += size {
+		//再判断一下，若整个切片的长度都小于当前的末尾，则把末尾的值改为当前切片的最大值，否则越界
+		if len(slice) < end {
+			end = len(slice) + 1
+		}
+		chunkslice = append(chunkslice, slice[i:end])
+		end += size
+	}
+	return
+}
+

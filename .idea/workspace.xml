@@ -20,11 +20,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0525142c-e9ec-40ac-af07-338c539bb92e" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" afterPath="$PROJECT_DIR$/.env" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/api/CrontabJobApi.go" beforeDir="false" afterPath="$PROJECT_DIR$/api/CrontabJobApi.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lastupdate.tmp" beforeDir="false" afterPath="$PROJECT_DIR$/lastupdate.tmp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/commentsRouter_.go" beforeDir="false" afterPath="$PROJECT_DIR$/routers/commentsRouter_.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/commentsRouter_api.go" beforeDir="false" afterPath="$PROJECT_DIR$/routers/commentsRouter_api.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/service/EtcdJobService.go" beforeDir="false" afterPath="$PROJECT_DIR$/service/EtcdJobService.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/service/Executor.go" beforeDir="false" afterPath="$PROJECT_DIR$/service/Executor.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/service/JobLock.go" beforeDir="false" afterPath="$PROJECT_DIR$/service/JobLock.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/service/Protocol.go" beforeDir="false" afterPath="$PROJECT_DIR$/service/Protocol.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/service/Scheduler.go" beforeDir="false" afterPath="$PROJECT_DIR$/service/Scheduler.go" afterDir="false" />
     </list>
@@ -36,12 +42,12 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Go File" />
         <option value="Go Application" />
+        <option value="Go File" />
       </list>
     </option>
   </component>
-  <component name="GOROOT" path="$PROJECT_DIR$/../../../go" />
+  <component name="GOROOT" path="D:\Go" />
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -52,7 +58,7 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
-    <property name="DefaultGoTemplateProperty" value="Go Application" />
+    <property name="DefaultGoTemplateProperty" value="Go File" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
@@ -73,16 +79,17 @@
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="nodejs_package_manager_path" value="npm" />
-    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
+    <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\code\go\src\go_crontab" />
+      <recent name="E:\code\go\src\go_crontab\api" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/service" />
       <recent name="E:\code\go\src\go_crontab\common" />
       <recent name="E:\code\go\src\go_crontab\service" />
-    </key>
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="E:\code\go\src\go_crontab\api" />
     </key>
   </component>
   <component name="RunManager">
@@ -120,47 +127,66 @@
     <integration-enabled>true</integration-enabled>
   </component>
   <component name="WindowStateProjectService">
-    <state width="1660" height="230" key="GridCell.Tab.0.bottom" timestamp="1595658381240">
-      <screen x="0" y="0" width="1714" height="876" />
+    <state x="752" y="450" key="#GOROOT" timestamp="1595734157982">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="752" y="450" key="#GOROOT/0.0.1920.1040@0.0.1920.1040" timestamp="1595734157982" />
+    <state x="740" y="274" key="FileChooserDialogImpl" timestamp="1596002672494">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="740" y="274" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1596002672494" />
+    <state width="1877" height="282" key="GridCell.Tab.0.bottom" timestamp="1596011685223">
+      <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1660" height="230" key="GridCell.Tab.0.bottom/0.0.1714.876@0.0.1714.876" timestamp="1595658381240" />
     <state width="1866" height="232" key="GridCell.Tab.0.bottom/0.0.1920.1034@0.0.1920.1034" timestamp="1595414955703" />
-    <state width="1660" height="230" key="GridCell.Tab.0.center" timestamp="1595658381239">
-      <screen x="0" y="0" width="1714" height="876" />
+    <state width="1877" height="282" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1596011685223" />
+    <state width="1877" height="282" key="GridCell.Tab.0.center" timestamp="1596011685223">
+      <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1660" height="230" key="GridCell.Tab.0.center/0.0.1714.876@0.0.1714.876" timestamp="1595658381239" />
     <state width="1866" height="232" key="GridCell.Tab.0.center/0.0.1920.1034@0.0.1920.1034" timestamp="1595414955701" />
-    <state width="1660" height="230" key="GridCell.Tab.0.left" timestamp="1595658381238">
-      <screen x="0" y="0" width="1714" height="876" />
+    <state width="1877" height="282" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1596011685223" />
+    <state width="1877" height="282" key="GridCell.Tab.0.left" timestamp="1596011685223">
+      <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1660" height="230" key="GridCell.Tab.0.left/0.0.1714.876@0.0.1714.876" timestamp="1595658381238" />
     <state width="1866" height="232" key="GridCell.Tab.0.left/0.0.1920.1034@0.0.1920.1034" timestamp="1595414955701" />
-    <state width="1660" height="230" key="GridCell.Tab.0.right" timestamp="1595658381239">
-      <screen x="0" y="0" width="1714" height="876" />
+    <state width="1877" height="282" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1596011685223" />
+    <state width="1877" height="282" key="GridCell.Tab.0.right" timestamp="1596011685223">
+      <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1660" height="230" key="GridCell.Tab.0.right/0.0.1714.876@0.0.1714.876" timestamp="1595658381239" />
     <state width="1866" height="232" key="GridCell.Tab.0.right/0.0.1920.1034@0.0.1920.1034" timestamp="1595414955702" />
-    <state x="626" y="67" width="459" height="757" key="RollbackChangesDialog" timestamp="1595655959236">
-      <screen x="0" y="0" width="1714" height="876" />
+    <state width="1877" height="282" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1596011685223" />
+    <state x="701" y="80" width="459" height="757" key="RollbackChangesDialog" timestamp="1595819362843">
+      <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="626" y="67" width="459" height="757" key="RollbackChangesDialog/0.0.1714.876@0.0.1714.876" timestamp="1595655959236" />
-    <state x="442" y="148" width="1037" height="742" key="SettingsEditor" timestamp="1595400412769">
-      <screen x="0" y="0" width="1920" height="1034" />
+    <state x="701" y="80" key="RollbackChangesDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1595819362843" />
+    <state x="442" y="149" width="1037" height="742" key="SettingsEditor" timestamp="1595734195899">
+      <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="395" y="125" key="SettingsEditor/0.0.1714.876@0.0.1714.876" timestamp="1595399145779" />
     <state x="442" y="148" width="1037" height="742" key="SettingsEditor/0.0.1920.1034@0.0.1920.1034" timestamp="1595400412769" />
-    <state x="572" y="0" width="581" height="876" key="find.popup" timestamp="1595655882763">
-      <screen x="0" y="0" width="1714" height="876" />
+    <state x="442" y="149" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1595734195899" />
+    <state x="641" y="0" width="651" height="1040" key="find.popup" timestamp="1595993055926">
+      <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="572" y="0" width="581" height="876" key="find.popup/0.0.1714.876@0.0.1714.876" timestamp="1595655882763" />
     <state x="641" y="0" width="638" height="1034" key="find.popup/0.0.1920.1034@0.0.1920.1034" timestamp="1595413544002" />
+    <state x="641" y="0" width="651" height="1040" key="find.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1595993055926" />
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1596013951287">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1596013951287" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">
           <url>file://$PROJECT_DIR$/service/EtcdJobService.go</url>
-          <line>269</line>
+          <line>273</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
       </breakpoints>

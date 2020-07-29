@@ -133,14 +133,18 @@ func(jobMgr *JobMgr) DeleteJob(jobName string)(oldJob *Job,err error){
 }
 
 //获取任务列表
-func (jobMgr *JobMgr) GetListJob()(jobList []*Job,err error){
+func (jobMgr *JobMgr) GetListJob(keyWord string)(jobList []*Job,err error){
 	var (
 		jobKey string
 		getResp *clientv3.GetResponse
 		job *Job
 	)
 	jobKey = os.Getenv("ETCD_JOB_DIR")
-	if getResp , err = jobMgr.kv.Get(context.TODO(),jobKey,clientv3.WithPrefix());err !=nil{
+	if keyWord != ""{
+		jobKey = jobKey+keyWord
+	}
+	//根据创建的版本排序，相当于根据id倒叙
+	if getResp , err = jobMgr.kv.Get(context.TODO(),jobKey,clientv3.WithPrefix(),clientv3.WithSort(clientv3.SortByCreateRevision,clientv3.SortDescend));err !=nil{
 		return nil,err
 	}
 	jobList = make([]*Job,0)

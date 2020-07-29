@@ -28,7 +28,6 @@ func (executor *Executor) ExecuteJob(info *JobExecuteInfo){
 		//初始化分布式锁
 		jobLock = G_jobMgr.CreateJobLock(info.Job.Name)
 
-
 		result.StartTime = time.Now()
 		//上锁
 		err = jobLock.TryLock()

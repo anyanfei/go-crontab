@@ -2,6 +2,9 @@ package service
 
 import (
 	"github.com/astaxie/beego/logs"
+	"github.com/astaxie/beego/orm"
+	"go_crontab/models"
+	"strconv"
 	"time"
 )
 
@@ -44,7 +47,37 @@ func (scheduler *Scheduler) processJobEvent(jobEvent *JobEvent){
  */
 func (scheduler *Scheduler) processJobResult(result *JobExecuteResult){
 	delete(scheduler.JobExecutingTable,result.ExecuteInfo.Job.Name)
-	logs.Info("任务执行完成",result.ExecuteInfo.Job.Name,result.Err)
+	//在这里开始添加进入mysql日志xc_task_log
+	var(
+		outPutInfo string
+		timeLayout string
+		ormer orm.Ormer
+		err error
+		insertRows int64
+		insertRowsString string
+
+	)
+	outPutInfo = string(result.Output)
+	if outPutInfo == ""{
+		outPutInfo = "接口返回空内容"
+	}
+	timeLayout = "2005-01-02 15:04:05"
+	if outPutInfo != ""{
+		taskLog := models.TaskModel{
+			JobName: result.ExecuteInfo.Job.Name,
+			JobRecallTime: result.EndTime,
+			JobRecallContent: outPutInfo,
+			CreateTime: time.Now(),
+		}
+		ormer = orm.NewOrm()
+		if insertRows,err = ormer.Insert(&taskLog);err !=nil{
+			logs.Error(err)
+			logs.Error("写入日志时出错")
+		}
+		insertRowsString = strconv.FormatInt(insertRows,10)
+		logs.Info("当前写入库日志id为："+insertRowsString)
+	}
+	logs.Info("任务执行完成",result.ExecuteInfo.Job.Name,result.Err,time.Unix(result.EndTime.Unix(),0).Format(timeLayout))
 }
 
 //协程启动调度
